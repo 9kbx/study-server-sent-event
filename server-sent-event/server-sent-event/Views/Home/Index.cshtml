@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<script type="text/javascript">
+
+    if (window.EventSource) {
+
+        var source = new EventSource('/api/sse');
+
+        source.onmessage = function(event) {
+            console.log('onmessage: ' + event.data);
+            console.log('onmessage.event', event);
+        };
+
+        source.onopen = function(event) {
+            console.log('onopen', event);
+        };
+
+        source.onerror = function(event) {
+            if (event.readyState == EventSource.CLOSED) {
+                console.log('onerror:sse closed');
+            } else {
+                console.log('onerror', event);
+            }
+        }
+        
+        // 自定义finish事件，主动关闭EventSource
+        source.addEventListener("finish", function(event) {
+            source.close();
+            console.log('finish, close event source');
+        }, false);
+
+        source.addEventListener("hello", function(event) {
+            console.log('hello event: world!', event.data);
+        }, false);
+    } else {
+        alert("你的浏览器不支持SSE");
+    }
+
+</script>
