@@ -1,4 +1,8 @@
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using server_sent_event.db;
 
 namespace server_sent_event
 {
@@ -33,6 +37,25 @@ namespace server_sent_event
             });
             #endregion use server sent event
 
+
+            InMemoryDatabaseRoot _databaseRoot = new InMemoryDatabaseRoot();
+            string _connectionString = Guid.NewGuid().ToString();
+            builder.Services.AddEntityFrameworkInMemoryDatabase();
+            builder.Services.AddDbContext<MemDbContext>(options =>
+            {
+                options.UseInMemoryDatabase(_connectionString, _databaseRoot);
+            });
+
+            services.AddSession(o =>
+            {
+                o.IdleTimeout = TimeSpan.FromHours(24);
+            });
+            services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = long.MaxValue;
+            });
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -42,6 +65,7 @@ namespace server_sent_event
             }
             app.UseStaticFiles();
 
+            app.UseSession();
             app.UseRouting();
 
             app.UseAuthorization();

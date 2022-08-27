@@ -7,4 +7,8 @@
     <RootNamespace>server_sent_event</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.8" />
+  </ItemGroup>
+
 </Project>

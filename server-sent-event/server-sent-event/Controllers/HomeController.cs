@@ -13,6 +13,14 @@ namespace server_sent_event.Controllers
             _logger = logger;
         }
 
+        public IActionResult SSE()
+        {
+            return View();
+        }
+
+
+
+
         public IActionResult Index()
         {
             return View();

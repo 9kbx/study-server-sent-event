@@ -1,0 +1,74 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<style>
+    .right {
+        text-align: right;
+    }
+</style>
+<b id="nick">@ViewBag.NickName</b>
+<div id="msgList" style="border:1px solid; height:400px; width:300px;">
+</div>
+<div>
+    <input id="input" />
+    <button id="btnSend" type="button">send msg</button>
+    <span id="log"></span>
+</div>
+
+<script>
+    $(function() {
+
+        if (window.EventSource) {
+            
+            var source = new EventSource('/chat/GetMsg');
+            
+            // 自定义finish事件，主动关闭EventSource
+            source.addEventListener("newmessage", function(event) {
+                showMsg(event.data, false);
+            }, false);
+        }
+
+
+        $('#input').keypress(function(e) {
+            //console.log('keypress', e.which);
+            if (e.which == 13) sendMsg();
+        });
+        $('#btnSend').on('click', sendMsg);
+
+        function sendMsg() {
+            var msg = $('#input').val();
+            if (msg) {
+                $.ajax({
+                    url: '/chat/sendmsg',
+                    data: {
+                        msg: msg
+                    },
+                    success: function() {
+                        var msg2 = $('#nick').html() + ':' + msg;
+                        showMsg(msg2, true);
+                        showLog('success');
+
+                        $('#input').val('');
+                        $('#input').focus();
+                    }
+                });
+            }
+        }
+        function showMsg(msg, myself) {
+            var div = $('<div></div>');
+            $(div).html(msg);
+            if (myself) {
+                $(div).addClass('right');
+            }
+
+            $('#msgList').append(div);
+        }
+        function showLog(log) {
+            $('#log').html(log);
+            setTimeout(function() {
+                $('#log').html('');
+            }, 1000);
+        }
+    });
+
+</script>
