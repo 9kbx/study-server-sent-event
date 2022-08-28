@@ -22,6 +22,22 @@
             
             var source = new EventSource('/chat/GetMsg');
             
+            //source.onopen = function(e) { console.log('open', e); }
+            //source.onerror = function(e) { console.log('error', e); }
+            
+        source.onopen = function(event) {
+            showMsg('<font style="color:green">open<br/>'+(new Date())+'</font>', true);
+        };
+
+        source.onerror = function(event) {
+            showMsg('<font style="color:red">error:'+event.readyState+'<br/>'+(new Date())+'</font>', true);
+            if (event.readyState == EventSource.CLOSED) {
+                console.log('onerror:sse closed');
+            } else {
+                console.log('onerror', event);
+            }
+        }
+
             // 自定义finish事件，主动关闭EventSource
             source.addEventListener("newmessage", function(event) {
                 showMsg(event.data, false);
